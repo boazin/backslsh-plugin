@@ -42,19 +42,18 @@ class BackslashPlugin(plugins.PluginInterface):
             test_logical_id=context.test.__slash__.id, name=str(context.test))
         gossip.trigger('backslash.report_test_start', started_test=self.current_test)
 
-    def test_success(self):
+    def test_end(self):
         self.current_test.report_end()
-        gossip.trigger('backslash.report_test_start', started_test=self.current_test)
+        gossip.trigger('backslash.report_test_end', ended_test=self.current_test)
 
     def test_error(self):
-        # TODO: is test_error means we need to end test as well? If not how do we end test when there is an error?
         self.current_test.add_error()
-        self.current_test.report_end()
 
     def test_failure(self):
-        # TODO: is test_failure means we need to end test as well? If not how do we end test when there is a failure?
         self.current_test.add_failure()
-        self.current_test.report_end()
+
+    def test_interrupt(self):
+        self.current_test.mark_interrupted()
 
     def test_skip(self, reason):
-        self.current_test.report_end(skipped=True)
+        self.current_test.mark_skipped()
