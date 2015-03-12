@@ -46,11 +46,12 @@ class BackslashPlugin(plugins.PluginInterface):
         self.current_test.report_end()
         gossip.trigger('backslash.report_test_end', ended_test=self.current_test)
 
-    def test_error(self):
+    def error_added(self, error, result):
         self.current_test.add_error()
-
-    def test_failure(self):
-        self.current_test.add_failure()
+        self.current_test.add_error_data(exception=error.exception.message,
+                                         exception_type=error.exception_type.__name__,
+                                         traceback=error.traceback.to_list(),
+                                         timestamp=error.time.timestamp)
 
     def test_interrupt(self):
         self.current_test.mark_interrupted()
