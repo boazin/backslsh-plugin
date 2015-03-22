@@ -47,7 +47,6 @@ class BackslashPlugin(plugins.PluginInterface):
         gossip.trigger('backslash.report_test_end', ended_test=self.current_test)
 
     def error_added(self, error, result):
-        self.current_test.add_error()
         self.current_test.add_error_data(exception=error.exception.message,
                                          exception_type=error.exception_type.__name__,
                                          traceback=error.traceback.to_list(),
