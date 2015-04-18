@@ -12,6 +12,7 @@ class BackslashPlugin(plugins.PluginInterface):
 
     def __init__(self):
         self.current_session = None
+        self.current_test = None
 
     def get_name(self):
         return "backslash"
@@ -47,6 +48,8 @@ class BackslashPlugin(plugins.PluginInterface):
         gossip.trigger('backslash.report_test_end', ended_test=self.current_test)
 
     def error_added(self, error, result):
+        if self.current_test is None:  # no 'session error' yet
+            return
         self.current_test.add_error_data(exception=error.exception.message,
                                          exception_type=error.exception_type.__name__,
                                          traceback=error.traceback.to_list(),
