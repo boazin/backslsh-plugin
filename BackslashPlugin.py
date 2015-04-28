@@ -46,10 +46,19 @@ class BackslashPlugin(plugins.PluginInterface):
     def test_end(self):
         self.current_test.report_end()
         gossip.trigger('backslash.report_test_end', ended_test=self.current_test)
+        self.current_test = None
 
     def error_added(self, error, result):
-        if self.current_test is None:  # no 'session error' yet
+        if self.current_test is None:  # session error
+            if self.current_session is None:
+                return  # it's even before a session exist - nowhere to report it
+                        # (+ there won't be an entry in Backslash so it's OK)
+            self.current_session.add_error_data(exception=error.exception.message,
+                                                exception_type=error.exception_type.__name__,
+                                                traceback=error.traceback.to_list(),
+                                                timestamp=error.time.timestamp)
             return
+
         self.current_test.add_error_data(exception=error.exception.message,
                                          exception_type=error.exception_type.__name__,
                                          traceback=error.traceback.to_list(),
